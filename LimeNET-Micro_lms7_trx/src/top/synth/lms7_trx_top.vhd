@@ -848,6 +848,7 @@ begin
    --Testing
    
    RAPI_GPCLK1       <= not fpga_btn_dbncd;
+   RAPI_GPIO12       <= GNSS_TPULSE;
    
    
    
