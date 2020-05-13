@@ -288,6 +288,9 @@ signal inst9_data                   : std_logic_vector(31 downto 0);
 signal eth_led1                     : std_logic;
 signal eth_led2                     : std_logic;
 
+--inst10 -- trigger
+signal inst10_from_fpgacfg          : t_FROM_FPGACFG;
+
 
 begin
 
@@ -464,8 +467,8 @@ begin
       pll_inclk            => LMS_MCLK2,
       pll_reconfig_clk     => LMK_CLK,
       pll_logic_reset_n    => reset_n,
-      pll_clk_ena          => inst0_from_fpgacfg.CLK_ENA(3 downto 0),
-      pll_drct_clk_en      => inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0) & inst0_from_fpgacfg.drct_clk_en(0),
+      pll_clk_ena          => inst10_from_fpgacfg.CLK_ENA(3 downto 0),
+      pll_drct_clk_en      => inst10_from_fpgacfg.drct_clk_en(0) & inst10_from_fpgacfg.drct_clk_en(0) & inst10_from_fpgacfg.drct_clk_en(0) & inst10_from_fpgacfg.drct_clk_en(0),
       pll_c0               => LMS_FCLK1,
       pll_c1               => inst1_pll_c1,
       pll_c2               => LMS_FCLK2,
@@ -526,7 +529,7 @@ begin
       EP82_wdata     => inst0_exfifo_of_d,
       EP82_wfull     => inst2_EP82_wfull,
       --stream endpoint fifo PC->FPGA
-      EP03_aclrn     => inst0_from_fpgacfg.rx_en,
+      EP03_aclrn     => inst10_from_fpgacfg.rx_en,
       EP03_rdclk     => inst1_pll_c1,
       EP03_rd        => inst6_tx_in_pct_rdreq,
       EP03_rdata     => inst2_EP03_rdata,
@@ -592,21 +595,21 @@ begin
       -- LED1 ( Raspberry eMMC enable )
       led1_in_g            => RAPI_EMMC_EN,
       led1_in_r            => inst5_busy,
-      led1_ctrl            => inst0_from_fpgacfg.FPGA_LED1_CTRL,
+      led1_ctrl            => inst10_from_fpgacfg.FPGA_LED1_CTRL,
       led1_out_g           => FPGA_LED1_G,
       led1_out_r           => FPGA_LED1_R,
       
       -- LED2 ( FTDI and NIOS busy )
       led2_in_g            => NOT ETH_GPIO1,
       led2_in_r            => NOT WIFI_PIO5,
-      led2_ctrl            => inst0_from_fpgacfg.FPGA_LED2_CTRL,
+      led2_ctrl            => inst10_from_fpgacfg.FPGA_LED2_CTRL,
       led2_out_g           => FPGA_LED2_G,
       led2_out_r           => FPGA_LED2_R,
       led2_hw_ver          => "0011",
       
       
       -- LED3 ( Clock and PLL lock )
-      led3_ctrl            => inst0_from_fpgacfg.FPGA_LED3_CTRL,
+      led3_ctrl            => inst10_from_fpgacfg.FPGA_LED3_CTRL,
       led3_out_g           => FPGA_LED3_G,
       led3_out_r           => FPGA_LED3_R,
       led3_pll1_locked     => inst1_pll_locked,
@@ -614,7 +617,7 @@ begin
       
       
       -- LED4 ( TCXO control status )
-      led4_ctrl            => inst0_from_fpgacfg.FPGA_LED4_CTRL,
+      led4_ctrl            => inst10_from_fpgacfg.FPGA_LED4_CTRL,
       led4_out_g           => FPGA_LED4_G,
       led4_out_r           => FPGA_LED4_R,
                            
@@ -628,7 +631,7 @@ begin
       -- LED5 ( GNSS status )
       led5_in_g            => inst7_fpga_led_g,
       led5_in_r            => inst7_fpga_led_r,
-      led5_ctrl            => inst0_from_fpgacfg.FPGA_LED5_CTRL,
+      led5_ctrl            => inst10_from_fpgacfg.FPGA_LED5_CTRL,
       led5_out_g           => FPGA_LED5_G,
       led5_out_r           => FPGA_LED5_R,
       --GPIO
@@ -685,7 +688,7 @@ begin
       
    )
    port map(                                             
-      from_fpgacfg            => inst0_from_fpgacfg,
+      from_fpgacfg            => inst10_from_fpgacfg,
       to_tstcfg_from_rxtx     => inst6_to_tstcfg_from_rxtx,
       from_tstcfg             => inst0_from_tstcfg,
       
@@ -797,10 +800,10 @@ begin
    inst9_data( 9) <= FPGA_LED5_G;    
    inst9_data(10) <= eth_led1;   -- ETH_LED1       
    inst9_data(11) <= eth_led2;   -- ETH_LED2       
-   inst9_data(12) <= inst0_from_fpgacfg.LMS1_RESET AND inst0_lms_ctr_gpio(0); -- LMS_RESET      
-   inst9_data(13) <= inst0_from_fpgacfg.LMS1_CORE_LDO_EN;                     -- LMS_CORE_LDO_EN
-   inst9_data(14) <= inst0_from_fpgacfg.LMS1_RXEN;                            -- LMS_RXEN       
-   inst9_data(15) <= inst0_from_fpgacfg.LMS1_TXEN;                            -- LMS_TXEN       
+   inst9_data(12) <= inst10_from_fpgacfg.LMS1_RESET AND inst0_lms_ctr_gpio(0); -- LMS_RESET      
+   inst9_data(13) <= inst10_from_fpgacfg.LMS1_CORE_LDO_EN;                     -- LMS_CORE_LDO_EN
+   inst9_data(14) <= inst10_from_fpgacfg.LMS1_RXEN;                            -- LMS_RXEN       
+   inst9_data(15) <= inst10_from_fpgacfg.LMS1_TXEN;                            -- LMS_TXEN       
    inst9_data(16) <= int_FPGA_SPI_ADF_SS;    -- FPGA_SPI_ADF_SS  
    inst9_data(17) <= int_FPGA_SPI_DAC_SS;    -- FPGA_SPI_DAC_SS  
    inst9_data(18) <= int_FPGA_SPI_FLASH_SS;  -- FPGA_SPI_FLASH_SS
@@ -809,14 +812,14 @@ begin
    inst9_data(21) <= '1'; -- FT_RESETn        
    inst9_data(22) <= '1'; -- RAPI_RUN         
    inst9_data(23) <= '0'; -- -                  
-   inst9_data(24) <= inst0_from_fpgacfg.GPIO(12); -- RFSW_TX_V1
-   inst9_data(25) <= inst0_from_fpgacfg.GPIO(13); -- RFSW_TX_V2
-   inst9_data(26) <= inst0_from_fpgacfg.GPIO(14); -- RFSW_TXO_V1
-   inst9_data(27) <= inst0_from_fpgacfg.GPIO(0);  -- RFSW_TRXA_V1
-   inst9_data(28) <= inst0_from_fpgacfg.GPIO(1);  -- RFSW_TRXB_V1
-   inst9_data(29) <= inst0_from_fpgacfg.GPIO(10); -- RFSW_RXI_V1 
-   inst9_data(30) <= inst0_from_fpgacfg.GPIO(8);  -- RFSW_RX_V1
-   inst9_data(31) <= inst0_from_fpgacfg.GPIO(9);  -- RFSW_RX_V2
+   inst9_data(24) <= inst10_from_fpgacfg.GPIO(12); -- RFSW_TX_V1
+   inst9_data(25) <= inst10_from_fpgacfg.GPIO(13); -- RFSW_TX_V2
+   inst9_data(26) <= inst10_from_fpgacfg.GPIO(14); -- RFSW_TXO_V1
+   inst9_data(27) <= inst10_from_fpgacfg.GPIO(0);  -- RFSW_TRXA_V1
+   inst9_data(28) <= inst10_from_fpgacfg.GPIO(1);  -- RFSW_TRXB_V1
+   inst9_data(29) <= inst10_from_fpgacfg.GPIO(10); -- RFSW_RXI_V1 
+   inst9_data(30) <= inst10_from_fpgacfg.GPIO(8);  -- RFSW_RX_V1
+   inst9_data(31) <= inst10_from_fpgacfg.GPIO(9);  -- RFSW_RX_V2
 
    inst9_IC_74HC595_top : entity work.IC_74HC595_top
    port map(
@@ -829,6 +832,21 @@ begin
       STCP     => SR_LATCH,   -- storage register clock
       DS       => SR_DIN      -- serial data
    );   
+
+-- ----------------------------------------------------------------------------
+-- Trigger
+-- ----------------------------------------------------------------------------
+   inst10_trigger : entity work.lms7_trx_trigger
+   port map(
+        clk         => LMK_CLK,
+        reset_n     => reset_n_lmk_clk,
+        fpgacfg_in  => inst0_from_fpgacfg,
+        fpgacfg_out => inst10_from_fpgacfg,
+        trigger     => GNSS_TPULSE
+   );
+
+
+
 -- ----------------------------------------------------------------------------
 -- Output ports
 -- ----------------------------------------------------------------------------
@@ -842,8 +860,8 @@ begin
    int_FPGA_SPI_ADF_SS  <= inst0_spi_0_SS_n(3);  
    int_FPGA_SPI_FLASH_SS<= inst0_spi_1_SS_n(0); 
    
-   LMS_TXNRX1        <= inst0_from_fpgacfg.LMS1_TXNRX1;
-   LMS_TXNRX2        <= inst0_from_fpgacfg.LMS1_TXNRX2;
+   LMS_TXNRX1        <= inst10_from_fpgacfg.LMS1_TXNRX1;
+   LMS_TXNRX2        <= inst10_from_fpgacfg.LMS1_TXNRX2;
 
    --Testing
    
